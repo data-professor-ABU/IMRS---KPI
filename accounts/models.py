@@ -46,7 +46,10 @@ class CustomUser(AbstractUser):
     role = models.CharField(
         max_length=20, choices=UserRole.choices, default=UserRole.USER
     )
-    projects = models.ManyToManyField(Project, related_name="users", blank=True)
+    # projects = models.ManyToManyField(Project, related_name="users", blank=True)
+    current_project = models.ForeignKey(
+        Project, on_delete=models.SET_NULL, related_name="users", null=True, blank=True
+    )
     position = models.CharField(
         max_length=20, choices=UserPosition.choices, default=UserPosition.JUNIOR
     )

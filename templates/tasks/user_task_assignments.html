@@ -1,0 +1,57 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+
+<!-- Responsive Table -->
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">
+        <a href="{% url 'swod_analysis' %}">SWOD</a> /</span> {{user.full_name}}</h4>
+
+<div class="card">
+    <h5 class="card-header">
+        <b>{{task.title}} </b> - bo'yicha xodimning ishlari
+    </h5>
+    <div class="table-responsive text-nowrap">
+        <table class="table table-bordered">
+            <thead>
+                <tr class="text-nowrap">
+                    <th>#</th>
+                    <th>Vazifa nomi </th>
+                    <th>Berilgan ball</th>
+                    <th>Izoh</th>
+                    <th>Sana</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task_assignment in task_assignments %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>
+                        {{task_assignment.subtask.title}}
+                        ({{task_assignment.subtask.min_range}} - {{task_assignment.subtask.max_range}})
+                    </td>
+                    <td>
+                        {{task_assignment.rating}}
+
+                    </td>
+                    <td>
+                        {{task_assignment.comment}}
+
+                    </td>
+                    <td>
+                        {{task_assignment.date|date:"d-m-Y"|default:"Mavjud emas"}}
+                    </td>
+
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No data</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--/ Responsive Table -->
+
+
+{% endblock %}

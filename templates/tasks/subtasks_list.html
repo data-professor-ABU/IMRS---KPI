@@ -26,7 +26,8 @@
             <tbody>
                 {% for staff_user in staff_users %}
                 <tr>
-                    <th scope="row">{{staff_user.id}}</th>
+                    <th scope="row">{{ forloop.counter }}</th>
+
                     <td>
                         {{staff_user.full_name}}
                     </td>
@@ -47,6 +48,7 @@
                     </td>
                     <td>
                         {{staff_user.total_rating}}
+                    </td>
                     <td>
                         <a href="{% url 'rate_user_task_assign' task.id staff_user.id %}"
                             class="btn btn-primary">Baholash</a>

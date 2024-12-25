@@ -1,7 +1,10 @@
+from datetime import datetime, timedelta
+
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Value
 from django.db.models.functions import Coalesce
 from django.shortcuts import render
+from django.utils import timezone
 
 from accounts.models import CustomUser, UserRole
 from tasks.models import SubTasks, TaskAssignee, Tasks
@@ -9,6 +12,10 @@ from tasks.models import SubTasks, TaskAssignee, Tasks
 
 @login_required
 def swod_analysis(request):
+    today = timezone.now()
+    a_month_ago = today - timedelta(days=30)
+    from_date = request.GET.get("from_date", a_month_ago)
+    to_date = request.GET.get("to_date", today)
     # Get all the users
     users = CustomUser.objects.filter(is_active=True, role=UserRole.USER)
 
@@ -36,7 +43,7 @@ def swod_analysis(request):
 
             # Get all the ratings of the user for the subtasks
             user_subtask_ratings = TaskAssignee.objects.filter(
-                user=user, subtask__in=task_subtasks
+                user=user, subtask__in=task_subtasks, date__range=[from_date, to_date]
             )
 
             # Calculate the sum of the ratings
@@ -57,6 +64,8 @@ def swod_analysis(request):
         "tasks": tasks,
         "ratings": ratings,  # Passing ratings dictionary by user ID
         "user_totals": user_totals,  # Passing user totals by user ID
+        "from_date": from_date,
+        "to_date": to_date,
     }
 
     return render(request, "tasks/swod_analysis.html", context)

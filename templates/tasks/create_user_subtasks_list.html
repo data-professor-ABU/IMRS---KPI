@@ -1,6 +1,9 @@
 {% extends 'base/base.html' %}
 
 {% block content %}
+<style>
+
+</style>
 
 <!-- Responsive Table -->
 <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light"> <a
@@ -11,11 +14,14 @@
         <b>{{task.title}} </b> - {{staff_user.full_name}} baholash
     </h5>
     <div class="table-responsive text-nowrap">
-        <table class="table table-bordered">
+        <table class="table table-bordered table-fit table-fixed">
             <thead>
                 <tr class="text-nowrap">
-                    <th>#</th>
-                    <th class="text-center">Vazifalar (ball)</th>
+                    <th class="th-lg"># </th>
+                    <th class="th-lg" class="text-center">
+
+                        Vazifalar (ball)
+                    </th>
                     <th class="text-center">Baholash</th>
                 </tr>
             </thead>
@@ -23,8 +29,11 @@
             <tbody>
                 {% for subtask in subtasks %}
                 <tr>
-                    <th scope="row">{{ subtask.id }}</th>
-                    <td>{{ subtask.title }} <small>({{subtask.min_range}} - {{subtask.max_range}})</small> </td>
+                    <td class="th-lg">{{ forloop.counter }}</td>
+
+                    <td>
+                        {{ subtask.title }} <small>({{subtask.min_range}} - {{subtask.max_range}})</small>
+                    </td>
                     <td class="text-center">
                         <form method="POST">
                             {% csrf_token %}
@@ -35,12 +44,18 @@
                                         value="{% if subtask.rated_data and subtask.rated_data.0.rating %}{{ subtask.rated_data.0.rating }}{% endif %}"
                                         required>
                                 </div>
+
                                 <div class="col-md-4 mb-3">
                                     <input type="text" class="form-control" name="comment" placeholder="Comment"
                                         value="{% if subtask.rated_data and subtask.rated_data.0.comment %}{{ subtask.rated_data.0.comment }}{% endif %}"
                                         required>
                                 </div>
                                 <div class="col-md-4 mb-3">
+                                    <input type="date" class="form-control" name="date" placeholder="Sana"
+                                        value="{% if subtask.rated_data and subtask.rated_data.0.date %}{{ subtask.rated_data.0.date|date:'Y-m-d' }}{% endif %}"
+                                        required>
+                                </div>
+                                <div class="col-md-12 mb-3">
                                     <button type="submit" class="btn btn-success">Save</button>
                                 </div>
                             </div>

@@ -18,50 +18,91 @@
     th {
         background-color: #f2f2f2;
     }
+
+    thead th {
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 2;
+    }
+
+    .stick-fixed {
+        position: sticky;
+        left: 0;
+        background: white !important;
+        z-index: 1;
+    }
+
+    .dt-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        margin: 5px;
+    }
 </style>
 <!-- Responsive Table -->
-<h4 class="fw-bold py-3 mb-4"> SWOD tahlil</h4>
+<h4 class="fw-bold py-3 mb-4">SWOD tahlil</h4>
 
 <div class="card">
     <h5 class="card-header">
-        SWOD Analysis
+        SWOD Tahliliy ma'lumotlar jadvali
     </h5>
     <div class="table-responsive text-nowrap">
+        <!-- left side search and right side from to range date filter -->
+        <div class="d-flex justify-content-lg-between p-3">
+            <div class="d-flex">
+                <!-- for Download Excel file -->
+            </div>
+            <!-- from to date filter -->
 
-        <table class="table table-bordered">
+            <form method="get" class="d-flex justify-content-lg-end">
+                <input type="date" class="form-control" placeholder="From date" aria-label="From date" name="from_date"
+                    value="{{ from_date|default:"" }}" required>
+                <input type="date" class="form-control" placeholder="To date" aria-label="To date" name="to_date"
+                    value="{{ to_date|default:"" }}" required>
+                <button class="btn btn-success" type="submit">Filter</button>
+            </form>
+        </div>
+
+        <table class="table table-bordered" id="example">
 
             <thead>
                 <tr class="text-nowrap">
                     <th>№</th>
                     <th>FISH</th>
                     {% for task in tasks %}
-                        <th>{{ task.title }}</th>
+                    <th>{{ task.title }}</th>
                     {% endfor %}
                     <th>Jami</th>
                 </tr>
             </thead>
             <tbody>
                 {% for user in users %}
-                    <tr>
-                        <th  scope="row">{{ forloop.counter }}</th>
-                        <td>{{ user.full_name }}</td>
-    
-                        {% with user_ratings=ratings|get_item:user.id %}
-                            {% for task in tasks %}
-                                <td>
-                                    {% with rating=user_ratings|get_task_rating:task.title %}
-                                        {{ rating|default:"0,00" }}
-                                    {% endwith %}
-                                </td>
-                            {% endfor %}
+                <tr>
+                    <th scope="row" class="stick-fixed">{{ forloop.counter }}</th>
+                    <td class="stick-fixed" style="left: 40px;">{{ user.full_name }}</td>
+
+                    {% with user_ratings=ratings|get_item:user.id %}
+                    {% for task in tasks %}
+                    <td>
+                        {% with rating=user_ratings|get_task_rating:task.title %}
+                        <!-- url a href link user_id and task_id  -->
+                        <a href="{% url 'user_task_assigments' user.id task.id %}?from_date={{ from_date|date:'Y-m-d' }}&to_date={{ to_date|date:'Y-m-d' }}">
+                            {{ rating|default:"0,00" }}
+                        </a>
                         {% endwith %}
-    
-                        <td>{{ user_totals|get_item:user.id|default:"0,00" }}</td>
-                    </tr>
+                    </td>
+                    {% endfor %}
+                    {% endwith %}
+
+                    <td>{{ user_totals|get_item:user.id|default:"0,00" }}</td>
+                </tr>
                 {% empty %}
-                    <tr>
-                        <td class="text-center">No data</td>
-                    </tr>
+                <tr>
+                    <td class="text-center">No data</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -69,6 +110,29 @@
     </div>
 </div>
 <!--/ Responsive Table -->
+<link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.0/js/dataTables.buttons.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.dataTables.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.print.min.js"></script>
 
+<script>
+
+    new DataTable('#example', {
+        layout: {
+            topStart: {
+                buttons: ['excel', 'pdf']
+            }
+        },
+        paging: false,
+    });
+</script>
 
 {% endblock %}

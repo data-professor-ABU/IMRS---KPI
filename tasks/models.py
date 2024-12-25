@@ -45,7 +45,7 @@ class SubTasks(BaseModel):
     is_active = models.BooleanField(_("Is Active"), default=True)
 
     def __str__(self):
-        return f"{self.task.title} - {self.title}"
+        return f"{self.task.title} - {self.title} - {self.min_range} - {self.max_range}"
 
     class Meta:
         verbose_name = _("Sub Task")
@@ -61,10 +61,7 @@ class TaskAssignee(BaseModel):
     )
     rating = models.IntegerField(_("Rating"), blank=True, null=True)
     comment = models.TextField(_("Comment"), blank=True, null=True)
-
-    @property
-    def user_total_rating(self):
-        pass
+    date = models.DateTimeField(_("Assigne Date"), null=True, blank=True)
 
     def __str__(self):
         return f"{self.subtask.title} - {self.user.username}"
@@ -73,10 +70,12 @@ class TaskAssignee(BaseModel):
         verbose_name = _("Task Assignee")
         verbose_name_plural = _("Task Assignees")
 
-    # def save(self, *args, **kwargs):
-    #     if self.rating:
-    #         rating = int(self.rating)
-    #         # check if rating is between task min and max range
-    #         if rating < self.subtask.min_range or rating > self.subtask.max_range:
-    #             raise ValueError("Rating should be between min and max range")
-    #     super(TaskAssignee, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if self.rating:
+            rating = int(self.rating)
+            # check if rating is between task min and max range
+            if rating < self.subtask.min_range or rating > self.subtask.max_range:
+                raise ValueError(
+                    f"Rating should be between min and max range {self.subtask.min_range} - {self.subtask.max_range}"
+                )
+        super(TaskAssignee, self).save(*args, **kwargs)

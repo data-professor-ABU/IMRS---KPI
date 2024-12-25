@@ -37,7 +37,7 @@ class CustomUserAdmin(UserAdmin):
                     "role",
                     "position",
                     "salary",
-                    "projects",
+                    "current_project",
                 )
             },
         ),
