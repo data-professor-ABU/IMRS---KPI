@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout
 from django.shortcuts import redirect, render
 
 from ..forms import SimpleLoginForm
+from ..models import UserRole
 
 
 def login_form(request):
@@ -15,7 +16,7 @@ def login_form(request):
             if user is not None:
                 auth_login(request, user)
                 messages.success(request, "Logged in successfully")
-                return redirect("index")
+                return redirect("tasks_list")
             else:
                 messages.error(request, "Login or password is incorrect")
                 return redirect("login")
