@@ -1,0 +1,25 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<h4 class="fw-bold py-3 mb-4">
+    Vazifalar ro'yxati
+</h4>
+<div class="row">
+
+    {% for task in tasks %}
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-none bg-transparent border border-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <a href="{% url 'subtasks_list' task.id %}">{{ task.title }}</a>
+                </h5>
+                <p class="card-text">
+                    {{ task.description }}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock %}

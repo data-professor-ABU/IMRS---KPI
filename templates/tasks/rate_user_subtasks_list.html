@@ -1,0 +1,63 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+
+<!-- Responsive Table -->
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light"> <a
+            href="{% url 'subtasks_list' task.id %}">Xodimlar</a> /</span> Baholash</h4>
+
+<div class="card">
+    <h5 class="card-header">
+        <b>{{task.title}} </b> - {{staff_user.full_name}} baholash
+    </h5>
+    <div class="table-responsive text-nowrap">
+        <table class="table table-bordered">
+            <thead>
+                <tr class="text-nowrap">
+                    <th>#</th>
+                    <th class="text-center">Vazifalar (ball)</th>
+                    <th class="text-center">Baholash</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for subtask in subtasks %}
+                <tr>
+                    <th scope="row">{{ subtask.id }}</th>
+                    <td>{{ subtask.title }} <small>({{subtask.min_range}} - {{subtask.max_range}})</small> </td>
+                    <td class="text-center">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="subtask_id" value="{{ subtask.id }}">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <input type="number" class="form-control" name="rate" placeholder="Rate"
+                                        value="{% if subtask.rated_data and subtask.rated_data.0.rating %}{{ subtask.rated_data.0.rating }}{% endif %}"
+                                        required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <input type="text" class="form-control" name="comment" placeholder="Comment"
+                                        value="{% if subtask.rated_data and subtask.rated_data.0.comment %}{{ subtask.rated_data.0.comment }}{% endif %}"
+                                        required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <button type="submit" class="btn btn-success">Save</button>
+                                </div>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center">No data</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+<!--/ Responsive Table -->
+
+
+{% endblock %}

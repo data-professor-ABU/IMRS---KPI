@@ -1,0 +1,67 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+
+<!-- Responsive Table -->
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">
+        <a href="{% url 'tasks_list' %}">Vazifalar</a> /</span> Xodimlar</h4>
+
+<div class="card">
+    <h5 class="card-header">
+        <b>{{task.title}} </b> - baholash uchun xodimlar ro'yxati
+    </h5>
+    <div class="table-responsive text-nowrap">
+        <table class="table table-bordered">
+            <thead>
+                <tr class="text-nowrap">
+                    <th>#</th>
+                    <th>Ismi </th>
+                    <th>Berilgan loyiha</th>
+                    <th>Lavozim</th>
+                    <th>Telefon raqami</th>
+                    <th>Umumiy bahosi</th>
+                    <th>Baholash</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for staff_user in staff_users %}
+                <tr>
+                    <th scope="row">{{staff_user.id}}</th>
+                    <td>
+                        {{staff_user.full_name}}
+                    </td>
+                    <td>
+                        <ul>
+                            {% for project in staff_user.projects.all %}
+                            <li>{{project.name}}</li>
+                            {% empty %}
+                            <li>No project</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        {{staff_user.position}}
+                    </td>
+                    <td>
+                        {{staff_user.phone}}
+                    </td>
+                    <td>
+                        {{staff_user.total_rating}}
+                    <td>
+                        <a href="{% url 'rate_user_task_assign' task.id staff_user.id %}"
+                            class="btn btn-primary">Baholash</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No data</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--/ Responsive Table -->
+
+
+{% endblock %}
