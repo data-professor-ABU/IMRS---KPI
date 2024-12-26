@@ -127,11 +127,11 @@ def swod_analysis(request):
     for user in users:
         if user.position == j_user:
             # formula: (user_total / max_total) * 100
-            users_kpi[user.id] = (user_totals[user.id] / j_max) * 100
+            users_kpi[user.id] = round((user_totals[user.id] / j_max) * 100, 2)
         if user.position == m_user:
-            users_kpi[user.id] = (user_totals[user.id] / m_max) * 100
+            users_kpi[user.id] = round((user_totals[user.id] / m_max) * 100, 2)
         if user.position == s_user:
-            users_kpi[user.id] = (user_totals[user.id] / s_max) * 100
+            users_kpi[user.id] = round((user_totals[user.id] / s_max) * 100, 2)
 
     context = {
         "users": users,
