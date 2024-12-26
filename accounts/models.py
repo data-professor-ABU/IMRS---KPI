@@ -34,9 +34,9 @@ class UserStatus(models.TextChoices):
 
 
 class UserPosition(models.TextChoices):
-    JUNIOR = "junior", _("Junior")
-    MIDDLE = "middle", _("Middle")
-    SENIOR = "senior", _("Senior")
+    JUNIOR = "junior", _("Yetakchi  mutaxassis")
+    MIDDLE = "middle", _("Bosh mutaxassis")
+    SENIOR = "senior", _("Loyiha rahbari")
 
 
 class CustomUser(AbstractUser):

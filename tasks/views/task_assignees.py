@@ -61,31 +61,33 @@ def create_user_task_assign(request, task_id, staff_id):
 
 
 @login_required
-def user_task_assigments(request, user_id, task_id):
+def user_task_assigments(request, user_id, task_id=None):
     try:
-        today = timezone.now()
-        a_month_ago = today - timedelta(days=30)
-        from_date = request.GET.get("from_date", a_month_ago)
-        to_date = request.GET.get("to_date", today)
+        from_date = request.GET.get("from_date", '')
+        to_date = request.GET.get("to_date", '')
 
         user = get_object_or_404(CustomUser, id=user_id)
-        task = Tasks.objects.get(id=task_id)
-        sub_tasks = SubTasks.objects.filter(task=task)
         task_assignments = (
             TaskAssignee.objects.filter(
-                user=user, subtask__in=sub_tasks, date__range=[from_date, to_date]
+                user=user
             )
             .order_by("-date")
-            .prefetch_related("subtask")
         )
+        if task_id:
+            task = Tasks.objects.get(id=task_id)
+            sub_tasks = SubTasks.objects.filter(task=task)
+            task_assignments = task_assignments.filter(subtask__in=sub_tasks)
+
+        if from_date != '' and to_date != '':
+            task_assignments = task_assignments.filter(date__range=[from_date, to_date])
 
         context = {
             "user": user,
-            "task": task,
-            "sub_tasks": sub_tasks,
+            "task": task if task_id else None,
+            "sub_tasks": sub_tasks if task_id else None,
             "task_assignments": task_assignments,
-            "start_date": from_date,
-            "end_date": to_date,
+            "from_date": from_date,
+            "to_date": to_date,
         }
         return render(
             request,

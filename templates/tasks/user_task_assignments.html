@@ -2,16 +2,31 @@
 
 {% block content %}
 
+
 <!-- Responsive Table -->
 <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">
         <a href="{% url 'swod_analysis' %}">SWOD</a> /</span> {{user.full_name}}</h4>
 
 <div class="card">
-    <h5 class="card-header">
-        <b>{{task.title}} </b> - bo'yicha xodimning ishlari
-    </h5>
+    <div class="d-flex justify-content-lg-between p-3">
+        <div class="d-flex">
+            <!-- for Download Excel file -->
+            <b>{{task.title}} </b> - bo'yicha xodimning ishlari
+
+        </div>
+        <!-- from to date filter -->
+
+        <form method="get" class="d-flex justify-content-lg-end">
+            <input type="date" class="form-control" placeholder="From date" aria-label="From date" name="from_date"
+                value="{{ from_date|default:"" }}" required>
+            <input type="date" class="form-control" placeholder="To date" aria-label="To date" name="to_date"
+                value="{{ to_date|default:"" }}" required>
+            <button class="btn btn-success" type="submit">Filter</button>
+        </form>
+    </div>
+
     <div class="table-responsive text-nowrap">
-        <table class="table table-bordered">
+        <table id="example" class="table table-bordered">
             <thead>
                 <tr class="text-nowrap">
                     <th>#</th>
@@ -53,5 +68,6 @@
 </div>
 <!--/ Responsive Table -->
 
+{% include 'base/dataTable.html' %}
 
 {% endblock %}

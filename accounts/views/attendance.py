@@ -9,7 +9,6 @@ from django.utils import timezone
 
 from ..forms import UserAttendanceForm
 from ..models import CustomUser, UserAttendance, UserRole
-from ..utils import analyze_users_attendance_data
 
 
 @login_required
@@ -49,8 +48,10 @@ def save_analyze_attendance(request):
                     df = form.save()
                     # save data to db
                     for index, row in df.iterrows():
+                        new_name = str(row["Name"]).replace(' ', '_')
+                        email_name = f"{new_name}@gmail.com"
                         user, _ = CustomUser.objects.get_or_create(
-                            email=row["Name"],
+                            email=email_name,
                             role=UserRole.USER,
                             defaults={"first_name": row["Name"]},
                         )

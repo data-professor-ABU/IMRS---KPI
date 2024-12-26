@@ -11,7 +11,7 @@
         <b>{{task.title}} </b> - baholash uchun xodimlar ro'yxati
     </h5>
     <div class="table-responsive text-nowrap">
-        <table class="table table-bordered">
+        <table id="example" class="table table-bordered">
             <thead>
                 <tr class="text-nowrap">
                     <th>#</th>
@@ -32,16 +32,10 @@
                         {{staff_user.full_name}}
                     </td>
                     <td>
-                        <ul>
-                            {% for project in staff_user.projects.all %}
-                            <li>{{project.name}}</li>
-                            {% empty %}
-                            <li>No project</li>
-                            {% endfor %}
-                        </ul>
+                        {{staff_user.current_project.name}}
                     </td>
                     <td>
-                        {{staff_user.position}}
+                        {{staff_user.get_position_display }}
                     </td>
                     <td>
                         {{staff_user.phone}}
@@ -64,6 +58,8 @@
     </div>
 </div>
 <!--/ Responsive Table -->
+
+{% include 'base/dataTable.html' %}
 
 
 {% endblock %}
