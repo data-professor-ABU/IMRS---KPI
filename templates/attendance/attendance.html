@@ -1,0 +1,98 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+
+
+<!-- Responsive Table -->
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">
+        Xodimlar /</span> Davomati</h4>
+
+<div class="card">
+    <h5 class="card-header">
+        Xodimlarning Davomati
+    </h5>
+    <div class="table-responsive text-nowrap">
+        <!-- left side search and right side from to range date filter -->
+        <div class="d-flex justify-content-lg-between p-3">
+            <div class="d-flex justify-content-lg-between">
+                <!-- upload Excel file form-->
+                <div class="d-flex justify-content-lg-between">
+                    <form method="post" enctype="multipart/form-data" class="d-flex"
+                        action="{% url 'save_analyze_attendance' %}">
+                        {% csrf_token %}
+                        <!-- <input type="file" name="file" class="form-control" pattern=".*\.xlsx" required> -->
+                        {{ form.excel_file }}
+                        <button class="btn btn-primary" type="submit">Upload</button>
+                    </form>
+                </div>
+            </div>
+            <!-- from to date filter -->
+            <form method="get" class="d-flex justify-content-lg-end">
+                <!-- select user  -->
+                <select class="form-select" name="user" aria-label="Default select example">
+                    <option value="" selected>Choose user</option>
+                    {% for user in users %}
+                    <option value="{{ user.id }}">
+                        {{ user.full_name }}
+                    </option>
+                    {% endfor %}
+                    <input type="date" class="form-control" placeholder="From date" aria-label="From date"
+                        name="from_date" value="{{ from_date|default:"" }}">
+                    <input type="date" class="form-control" placeholder="To date" aria-label="To date" name="to_date"
+                        value="{{ to_date|default:"" }}">
+                    <button class="btn btn-success" type="submit">Filter</button>
+            </form>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr class="text-nowrap">
+                    <th>#</th>
+                    <th>Ismi </th>
+                    <th>Berilgan loyiha</th>
+                    <th>Lavozim</th>
+                    <th>Telefon raqami</th>
+                    <th>Kirishdagi kechikgan vaqti (minut)</th>
+                    <th>Chiqishdagi erta ketgan vaqti (minut)</th>
+                    <th>Jarim ball</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attendance in attendances %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+
+                    <td>
+                        {{attendance.user.full_name}}
+                    </td>
+                    <td>
+                        {{attendance.user.current_project.name}}
+                    </td>
+                    <td>
+                        {{attendance.user.position}}
+                    </td>
+                    <td>
+                        {{attendance.user.phone}}
+                    </td>
+                    <td>
+                        {{attendance.late_entry_time}}
+                    </td>
+                    <td>
+                        {{attendance.early_exit_time}}
+                    </td>
+                    <td>
+                        {{attendance.penalty}}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center">No data</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--/ Responsive Table -->
+
+
+{% endblock %}

@@ -3,29 +3,6 @@
 
 {% block content %}
 <style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    th,
-    td {
-        border: 1px solid #000;
-        padding: 8px;
-        text-align: center;
-    }
-
-    th {
-        background-color: #f2f2f2;
-    }
-
-    thead th {
-        position: sticky;
-        top: 0;
-        background: white;
-        z-index: 2;
-    }
-
     .stick-fixed {
         position: sticky;
         left: 0;
@@ -75,7 +52,10 @@
                     {% for task in tasks %}
                     <th>{{ task.title }}</th>
                     {% endfor %}
+                    <th>Jarima</th>
+                    <th>Bonus</th>
                     <th>Jami</th>
+                    <th>KPI</th>
                 </tr>
             </thead>
             <tbody>
@@ -89,7 +69,8 @@
                     <td>
                         {% with rating=user_ratings|get_task_rating:task.title %}
                         <!-- url a href link user_id and task_id  -->
-                        <a href="{% url 'user_task_assigments' user.id task.id %}?from_date={{ from_date|date:'Y-m-d' }}&to_date={{ to_date|date:'Y-m-d' }}">
+                        <a
+                            href="{% url 'user_task_assigments' user.id task.id %}?from_date={{ from_date|date:'Y-m-d' }}&to_date={{ to_date|date:'Y-m-d' }}">
                             {{ rating|default:"0,00" }}
                         </a>
                         {% endwith %}
@@ -97,7 +78,12 @@
                     {% endfor %}
                     {% endwith %}
 
+                    <td>{{ total_penalty|get_item:user.id|default:"0,00" }}</td>
+                    <td>
+                        {{ users_bonus|get_item:user.id|default:"0,00" }}
+                    </td>
                     <td>{{ user_totals|get_item:user.id|default:"0,00" }}</td>
+                    <td>{{ users_kpi|get_item:user.id|default:"0,00" }} %</td>
                 </tr>
                 {% empty %}
                 <tr>

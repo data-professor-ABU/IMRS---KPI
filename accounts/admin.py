@@ -1,7 +1,15 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import CustomUser, Project
+from .models import CustomUser, Project, UserAttendance
+
+
+@admin.register(UserAttendance)
+class UserAttendanceAdmin(admin.ModelAdmin):
+    list_display = ("user", "date", "penalty")
+    search_fields = ("user", "date")
+    date_hierarchy = "date"
+    ordering = ("date",)
 
 
 @admin.register(Project)

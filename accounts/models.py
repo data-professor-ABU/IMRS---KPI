@@ -75,3 +75,26 @@ class CustomUser(AbstractUser):
     class Meta:
         verbose_name = _("CustomUser")
         verbose_name_plural = _("CustomUsers")
+
+
+class UserAttendance(BaseModel):
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name="attendances"
+    )
+
+    date = models.DateField()
+    late_entry_time = models.CharField("Late Entry Time", max_length=255)
+    early_exit_time = models.CharField("Early Exit Time", max_length=255)
+    penalty = models.PositiveIntegerField(default=0)
+
+    @property
+    def total_minutes(self):
+        return self.late_entry_time + self.early_exit_time
+
+    def __str__(self):
+        return f"{self.user} - {self.date}"
+
+    class Meta:
+        verbose_name = _("UserAttendance")
+        verbose_name_plural = _("UserAttendances")
+        unique_together = ("user", "date")

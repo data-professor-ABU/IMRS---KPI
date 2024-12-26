@@ -1,5 +1,25 @@
 from django import forms
 
+from .utils import analyze_users_attendance_data
+
+
+class UserAttendanceForm(forms.Form):
+    excel_file = forms.FileField(
+        label="Upload Excel File",
+        widget=forms.FileInput(attrs={"class": "form-control"}),
+    )
+
+    def clean_excel_file(self):
+        excel_file = self.cleaned_data.get("excel_file")
+        if not excel_file.name.endswith(".xlsx"):
+            raise forms.ValidationError("Only .xlsx files are allowed")
+        return excel_file
+
+    def save(self):
+        excel_file = self.cleaned_data.get("excel_file")
+        df = analyze_users_attendance_data(excel_file)
+        return df
+
 
 class SimpleLoginForm(forms.Form):
     email = forms.EmailField()
