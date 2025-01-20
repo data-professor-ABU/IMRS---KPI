@@ -278,7 +278,7 @@
   // --------------------------------------------------------------------
   const growthChartEl = document.querySelector('#growthChart'),
     growthChartOptions = {
-      series: [78],
+      series: [64],
       labels: ['Growth'],
       chart: {
         height: 240,

@@ -1,0 +1,185 @@
+{% extends 'base/base.html' %}
+{load static %}
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-3">Dashboard</h5>
+            <div class="d-flex justify-content-between">
+                <form method="get" action="{% url 'dashboard' %}" class="d-flex gap-3">
+                    <!-- add select filter and from to date filter -->
+                    <select class="form-select" id="position_filter" name="position">
+                        <option value="all" selected>Hammasi</option>
+                        <option value="junior">Yetakchi mutaxassis</option>
+                        <option value="middle">Bosh mutaxassis</option>
+                        <option value="senior">Loyiha rahbari</option>
+
+                    </select>
+                    <input type="date" class="form-control" id="from_date_input" name="from_date">
+                    <input type="date" class="form-control" id="to_date_input" name="to_date">
+                    <button type="submit" class="btn btn-primary" id="filter_btn">Filter</button>
+                </form>
+
+            </div>
+        </div>
+
+        <div class="table-responsive text-nowrap">
+            <div>
+
+                <!-- BAR Chart -->
+                <canvas id="kpiChart" width="400" height="360">
+
+                </canvas>
+
+                <a id="download" download="ChartImage.jpg" href="" class="btn btn-primary float-right bg-flat-color-1"
+                    title="Descargar Gráfico">
+
+                    <!-- Download Icon -->
+                    Save as Image
+                    <i class="fa fa-download"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+    //save as image
+    //Download Chart Image
+    document.getElementById("download").addEventListener('click', function () {
+        /*Get image of canvas element*/
+        var url_base64jp = document.getElementById("lineChart").toDataURL("image/jpg");
+        /*get download button (tag: <a></a>) */
+        var a = document.getElementById("download");
+        /*insert chart image url to download button (tag: <a></a>) */
+        a.href = url_base64jp;
+    });
+
+    // Filter the data based on the selected position
+    const position_value = "{{ position|default:'all' }}";
+    const position_filter = document.getElementById('position_filter');
+    position_filter.value = position_value;
+
+    const from_date_value = "{{ from_date }}";
+    const from_date_input = document.getElementById('from_date_input');
+    from_date_input.value = from_date_value;
+
+    const to_date_value = "{{ to_date }}";
+    const to_date_input = document.getElementById('to_date_input');
+    to_date_input.value = to_date_value;
+
+
+    // Prepare the data for Chart.js
+    const prepareChartData = (ratingsData) => {
+        // Get all unique task names (labels)
+        const taskNames = Object.values(ratingsData)[0] ?
+            Object.keys(Object.values(ratingsData)[0]) : [];
+
+        // Get user IDs
+        const userIds = Object.keys(ratingsData);
+
+        // Prepare datasets (one for each task)
+        const datasets = taskNames.map(taskName => {
+            return {
+                label: taskName,
+                data: userIds.map(userId => ratingsData[userId][taskName] || 0),
+                backgroundColor: getRandomColor(),
+                borderColor: 'rgb(255, 255, 255)',
+                borderWidth: 1
+            };
+        });
+
+        return {
+            labels: userIds, // Y-axis will show user IDs
+            datasets: datasets // Each dataset represents a task
+        };
+    };
+
+    // Helper function to generate random colors
+    const getRandomColor = () => {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    };
+
+
+    // Create the chart
+    const ctx = document.getElementById('kpiChart').getContext('2d');
+    const chartData = prepareChartData({{ ratings| safe }});
+
+
+    const _config = {
+        responsive: true,
+        barThickness: 100,
+        type: 'bar',
+        data: chartData,
+        options: {
+            indexAxis: 'y',
+            elements: {
+                bar: {
+                    borderWidth: 2,
+                }
+            },
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                },
+                title: {
+                    display: true,
+                    text: `Xodimlarning ${from_date_value} dan ${to_date_value} gacha ishlagan KPI natijalari`,
+                    font: {
+                        size: 20,
+                        weight: 'bold'
+                    }
+                }
+            },
+            scales: {
+                // x: {
+                //     stacked: true,
+                // },
+                // y: {
+                //     stacked: true
+                // }
+
+                y: {
+                    stacked: true,
+                    ticks: {
+                        stepSize: 1
+                    },
+                    suggestedMin: 0,
+                    title: {
+                        display: true,
+                        text: 'Xodimlar ismi',
+                        font: {
+                            size: 16,
+                            weight: 'bold',
+                        }
+                    }
+                },
+                x: {
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: 'Ballar',
+                        font: {
+                            size: 16,
+                            weight: 'bold',
+                        }
+                    },
+                },
+
+
+            }
+        }
+    };
+    // Create the chart
+    var myPieChart = new Chart(ctx, _config);
+
+</script>
+{% endblock %}

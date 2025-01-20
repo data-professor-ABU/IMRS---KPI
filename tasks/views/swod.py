@@ -58,7 +58,7 @@ def swod_analysis(request):
                 user=user, subtask__in=task_subtasks
             )
             if from_date != '' and to_date != '':
-                user_subtask_ratings.filter(date__range=[from_date, to_date])
+                user_subtask_ratings = user_subtask_ratings.filter(date__range=[from_date, to_date])
 
             # Calculate the sum of the ratings
             total_task_rating = user_subtask_ratings.aggregate(
