@@ -2,7 +2,7 @@
 {load static %}
 {% block content %}
 <div class="container">
-    <div class="card">
+    <div class="card" style="height: calc(100vh - 200px);">
         <div class="card-header">
             <h5 class="card-title mb-3">Dashboard</h5>
             <div class="d-flex justify-content-between">
@@ -31,13 +31,6 @@
 
                 </canvas>
 
-                <a id="download" download="ChartImage.jpg" href="" class="btn btn-primary float-right bg-flat-color-1"
-                    title="Descargar Gráfico">
-
-                    <!-- Download Icon -->
-                    Save as Image
-                    <i class="fa fa-download"></i>
-                </a>
             </div>
         </div>
     </div>
@@ -46,30 +39,18 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 
-    //save as image
-    //Download Chart Image
-    document.getElementById("download").addEventListener('click', function () {
-        /*Get image of canvas element*/
-        var url_base64jp = document.getElementById("lineChart").toDataURL("image/jpg");
-        /*get download button (tag: <a></a>) */
-        var a = document.getElementById("download");
-        /*insert chart image url to download button (tag: <a></a>) */
-        a.href = url_base64jp;
-    });
-
     // Filter the data based on the selected position
     const position_value = "{{ position|default:'all' }}";
     const position_filter = document.getElementById('position_filter');
     position_filter.value = position_value;
 
-    const from_date_value = "{{ from_date }}";
+    const from_date_value = "{{ from_date|date:'Y-m-d' }}";
     const from_date_input = document.getElementById('from_date_input');
     from_date_input.value = from_date_value;
 
-    const to_date_value = "{{ to_date }}";
+    const to_date_value = "{{ to_date|date:'Y-m-d' }}";
     const to_date_input = document.getElementById('to_date_input');
     to_date_input.value = to_date_value;
-
 
     // Prepare the data for Chart.js
     const prepareChartData = (ratingsData) => {
@@ -77,14 +58,22 @@
         const taskNames = Object.values(ratingsData)[0] ?
             Object.keys(Object.values(ratingsData)[0]) : [];
 
-        // Get user IDs
-        const userIds = Object.keys(ratingsData);
+        // Get user IDs and calculate total scores
+        const userIdsWithScores = Object.keys(ratingsData).map(userId => {
+            const totalScore = taskNames.reduce((sum, task) =>
+                sum + (ratingsData[userId][task] || 0), 0);
+            return { userId, totalScore };
+        });
+
+        // Sort users by total score in descending order
+        userIdsWithScores.sort((a, b) => b.totalScore - a.totalScore);
+        const sortedUserIds = userIdsWithScores.map(item => item.userId);
 
         // Prepare datasets (one for each task)
         const datasets = taskNames.map(taskName => {
             return {
                 label: taskName,
-                data: userIds.map(userId => ratingsData[userId][taskName] || 0),
+                data: sortedUserIds.map(userId => ratingsData[userId][taskName] || 0),
                 backgroundColor: getRandomColor(),
                 borderColor: 'rgb(255, 255, 255)',
                 borderWidth: 1
@@ -92,7 +81,7 @@
         });
 
         return {
-            labels: userIds, // Y-axis will show user IDs
+            labels: sortedUserIds, // Y-axis will show sorted user IDs
             datasets: datasets // Each dataset represents a task
         };
     };
@@ -119,6 +108,13 @@
         type: 'bar',
         data: chartData,
         options: {
+            options: {
+                animation: {
+                    onComplete: function () {
+                        console.log(myChart.toBase64Image());
+                    },
+                },
+            },
             indexAxis: 'y',
             elements: {
                 bar: {
@@ -140,13 +136,6 @@
                 }
             },
             scales: {
-                // x: {
-                //     stacked: true,
-                // },
-                // y: {
-                //     stacked: true
-                // }
-
                 y: {
                     stacked: true,
                     ticks: {
@@ -160,6 +149,13 @@
                             size: 16,
                             weight: 'bold',
                         }
+                    },
+                    // text of the y-axis also bold
+                    ticks: {
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        }
                     }
                 },
                 x: {
@@ -172,6 +168,12 @@
                             weight: 'bold',
                         }
                     },
+                    ticks: {
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        }
+                    }
                 },
 
 

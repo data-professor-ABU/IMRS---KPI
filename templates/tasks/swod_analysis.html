@@ -43,7 +43,6 @@
                     {% for task in tasks %}
                     <th>{{ task.title }}</th>
                     {% endfor %}
-                    <th>Jarima</th>
                     <th>Bonus ({{total_users_bonus}})</th>
                     <th>Jami ({{users_total}})</th>
                     <th>KPI</th>
@@ -80,7 +79,6 @@
                     {% endfor %}
                     {% endwith %}
 
-                    <td>{{ total_penalty|get_item:user.id|default:"0,00" }}</td>
                     <td>
                         {{ users_bonus|get_item:user.id|default:"0,00" }}
                     </td>

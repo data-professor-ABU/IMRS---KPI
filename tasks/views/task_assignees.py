@@ -28,11 +28,20 @@ def create_user_task_assign(request, task_id, staff_id):
 
         if request.method == "POST":
             subtask_id = request.POST.get("subtask_id")
-            rate = request.POST.get("rate")
+            rate = int(request.POST.get("rate"))
             comment = request.POST.get("comment")
             date = request.POST.get("date")
 
             subtask = SubTasks.objects.get(id=subtask_id)
+            if rate < subtask.min_range or rate > subtask.max_range:
+                messages.error(
+                    request,
+                    f"Rating should be between {subtask.min_range} and {subtask.max_range}",
+                )
+                return redirect(
+                    "rate_user_task_assign", task_id=task_id, staff_id=staff_id
+                )
+
             # Create or update the TaskAssignee instance
             assignee = TaskAssignee.objects.create(
                 subtask=subtask,
@@ -63,22 +72,17 @@ def create_user_task_assign(request, task_id, staff_id):
 @login_required
 def user_task_assigments(request, user_id, task_id=None):
     try:
-        from_date = request.GET.get("from_date", '')
-        to_date = request.GET.get("to_date", '')
+        from_date = request.GET.get("from_date", "")
+        to_date = request.GET.get("to_date", "")
 
         user = get_object_or_404(CustomUser, id=user_id)
-        task_assignments = (
-            TaskAssignee.objects.filter(
-                user=user
-            )
-            .order_by("-date")
-        )
+        task_assignments = TaskAssignee.objects.filter(user=user).order_by("-date")
         if task_id:
             task = Tasks.objects.get(id=task_id)
             sub_tasks = SubTasks.objects.filter(task=task)
             task_assignments = task_assignments.filter(subtask__in=sub_tasks)
 
-        if from_date != '' and to_date != '':
+        if from_date != "" and to_date != "":
             task_assignments = task_assignments.filter(date__range=[from_date, to_date])
 
         context = {

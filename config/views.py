@@ -6,31 +6,27 @@ from django.db.models import Sum, Value
 from django.db.models.functions import Coalesce
 from django.shortcuts import render
 
-from accounts.models import CustomUser, Project, UserAttendance, UserPosition, UserRole
+from accounts.models import CustomUser, Project, UserPosition, UserRole
 from tasks.models import SubTasks, TaskAssignee, Tasks
 
 
 @login_required
 def dashboard(request):
-    from_date = request.GET.get("from_date",None)
+    from_date = request.GET.get("from_date", None)
     to_date = request.GET.get("to_date", None)
-    #check from_date and to_date if none set default value (a month ago and today)
+    # check from_date and to_date if none set default value (a month ago and today)
     if not from_date and not to_date:
         from_date = datetime.now() - timedelta(days=30)
         to_date = datetime.now()
     position = request.GET.get("position", "")
 
-    #filter users by position
-    users = CustomUser.objects.filter(is_active=True, role=UserRole.USER).order_by("position")
+    # filter users by position
+    users = CustomUser.objects.filter(is_active=True, role=UserRole.USER).order_by(
+        "first_name", "last_name"
+    )
     if position in [UserPosition.JUNIOR, UserPosition.MIDDLE, UserPosition.SENIOR]:
         users = users.filter(position=position)
 
-    attendances = UserAttendance.objects.filter(
-        user__in=users
-    )
-    if from_date and to_date:
-        attendances = attendances.filter(date__range=[from_date, to_date])
- 
     # Get all the tasks
     tasks = Tasks.objects.filter(is_active=True)
 
@@ -43,15 +39,9 @@ def dashboard(request):
     # Create a dictionary to store the ratings
     ratings = {}
     user_totals = {}
-    total_penalty = {}
-
 
     # Iterate over all the users
     for user in users:
-        # Get all the attendances of the user
-        user_total_penalty = attendances.filter(user=user).aggregate(
-            total_penalty=Coalesce(Sum("penalty"), Value(0))
-        )["total_penalty"]
 
         # Create a dictionary to store the ratings of the user
         user_ratings = {}
@@ -68,7 +58,9 @@ def dashboard(request):
                 user=user, subtask__in=task_subtasks
             )
             if from_date and to_date:
-                user_subtask_ratings = user_subtask_ratings.filter(date__range=[from_date, to_date])
+                user_subtask_ratings = user_subtask_ratings.filter(
+                    date__range=[from_date, to_date]
+                )
             # Calculate the sum of the ratings
             total_task_rating = user_subtask_ratings.aggregate(
                 total_rating=Coalesce(Sum("rating"), Value(0))
@@ -77,12 +69,10 @@ def dashboard(request):
             # Add the task rating to the user ratings
             user_ratings[task.title] = total_task_rating
             total_rating += total_task_rating  # Add task rating to the total
-        
+
         # Add the user ratings and total rating to the ratings dictionary
         ratings[user.full_name] = user_ratings  # Store by user ID
-        total_penalty[user.full_name] = user_total_penalty
-        total = total_rating - user_total_penalty
-        user_totals[user.full_name] = round(total, 2)
+        user_totals[user.full_name] = round(total_rating, 2)
 
     # calculate the average of company
     user_totals_len = len(user_totals) if len(user_totals) > 0 else 1
@@ -93,7 +83,7 @@ def dashboard(request):
 
     for project in projects:
         project_users = CustomUser.objects.filter(
-            role=UserRole.USER, current_project=project
+            role=UserRole.USER, current_project=project, is_active=True
         )
         project_total = sum(
             user_totals[user.full_name]
@@ -113,16 +103,15 @@ def dashboard(request):
     for user in users:
         if user.current_project:
             pr_avr = project_above_avg.get(user.current_project.id)
-            if pr_avr and user_totals[user.full_name]>pr_avr:
-                bonus = pr_avr*0.1
+            if pr_avr and user_totals[user.full_name] > pr_avr:
+                bonus = pr_avr * 0.1
                 users_bonus[user.full_name] = bonus
                 user_totals[user.full_name] += bonus
 
             elif pr_avr:
-                bonus = pr_avr*0.05
+                bonus = pr_avr * 0.05
                 users_bonus[user.full_name] = bonus
                 user_totals[user.full_name] += bonus
-            
 
     # By user level find max user_totals and set it 100% then calculate other same level users percentage
     j_user = UserPosition.JUNIOR
@@ -143,32 +132,33 @@ def dashboard(request):
     m_max = max(m_user_totals.values()) if m_user_totals else None
     s_max = max(s_user_totals.values()) if s_user_totals else None
 
-
     users_kpi = {}
 
     for user in users:
         if user.position == j_user:
             # formula: (user_total / max_total) * 100
-            users_kpi[user.full_name] = round((user_totals[user.full_name] / j_max) * 100, 2) if j_max else 0
+            users_kpi[user.full_name] = (
+                round((user_totals[user.full_name] / j_max) * 100, 2) if j_max else 0
+            )
         if user.position == m_user:
-            users_kpi[user.full_name] = round((user_totals[user.full_name] / m_max) * 100, 2) if m_max else 0
+            users_kpi[user.full_name] = (
+                round((user_totals[user.full_name] / m_max) * 100, 2) if m_max else 0
+            )
         if user.position == s_user:
-            users_kpi[user.full_name] = round((user_totals[user.full_name] / s_max) * 100, 2) if s_max else 0
+            users_kpi[user.full_name] = (
+                round((user_totals[user.full_name] / s_max) * 100, 2) if s_max else 0
+            )
 
-
-    users_first_name = list(users.values_list("first_name", flat=True))
     context = {
         "users": users,
-        "users_first_name": users_first_name,
         "tasks": tasks,
-        "ratings":json.dumps(ratings),  # Passing ratings dictionary by user ID
+        "ratings": json.dumps(ratings),  # Passing ratings dictionary by user ID
         "user_totals": user_totals,  # Passing user totals by user ID
-        "total_penalty": total_penalty,  # Passing total penalty by user ID
         "users_bonus": users_bonus,  # Passing user bonus by user ID
         "users_kpi": users_kpi,
-        "company_total_avg": round(company_total_avg,2),
-        "users_total":sum(user_totals.values()),
-        "total_users_bonus":sum(users_bonus.values()),
+        "company_total_avg": round(company_total_avg, 2),
+        "users_total": sum(user_totals.values()),
+        "total_users_bonus": sum(users_bonus.values()),
         "project_avg": project_avg,
         "project_above_avg": project_above_avg,
         "from_date": from_date,

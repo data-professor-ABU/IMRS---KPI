@@ -26,7 +26,8 @@
 
         <li class="menu-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
             <a href="{% url 'dashboard' %}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <i class="menu-icon tf-icons bx bx-line-chart"></i>
+
                 <div data-i18n="Analytics">
                     Dashboard
                 </div>
@@ -48,11 +49,11 @@
             </a>
 
         </li>
-        <li class="menu-item {% if request.resolver_match.url_name == 'users_attendance' %}active{% endif %}">
-            <a href="{% url 'users_attendance' %}" class="menu-link">
+        <li class="menu-item {% if request.resolver_match.url_name == 'staff_list' %}active{% endif %}">
+            <a href="{% url 'staff_list' %}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-table"></i>
                 <div data-i18n="Tables">
-                    Xodimlar davomati
+                    Xodimlar ro'yxati
                 </div>
             </a>
         </li>

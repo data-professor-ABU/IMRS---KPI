@@ -70,12 +70,12 @@ class TaskAssignee(BaseModel):
         verbose_name = _("Task Assignee")
         verbose_name_plural = _("Task Assignees")
 
-    def save(self, *args, **kwargs):
-        if self.rating:
-            rating = int(self.rating)
-            # check if rating is between task min and max range
-            if rating < self.subtask.min_range or rating > self.subtask.max_range:
-                raise ValueError(
-                    f"Rating should be between min and max range {self.subtask.min_range} - {self.subtask.max_range}"
-                )
-        super(TaskAssignee, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self.rating:
+    #         rating = int(self.rating)
+    #         # check if rating is between task min and max range
+    #         if rating < self.subtask.min_range or rating > self.subtask.max_range:
+    #             raise ValueError(
+    #                 f"Rating should be between min and max range {self.subtask.min_range} - {self.subtask.max_range}"
+    #             )
+    #     super(TaskAssignee, self).save(*args, **kwargs)
