@@ -18,15 +18,15 @@
                     <th>Ismi </th>
                     <th>Berilgan loyiha</th>
                     <th>Lavozim</th>
+                    <th>Baholash</th>
                     <th>Telefon raqami</th>
                     <th>Umumiy bahosi</th>
-                    <th>Baholash</th>
                 </tr>
             </thead>
             <tbody>
                 {% for staff_user in staff_users %}
                 <tr>
-                    <th scope="row">{{ forloop.counter }}</th>
+                    <td scope="row">{{ forloop.counter }}</td>
 
                     <td>
                         {{staff_user.full_name}}
@@ -35,18 +35,19 @@
                         {{staff_user.current_project.name}}
                     </td>
                     <td>
+                        <a href="{% url 'rate_user_task_assign' task.id staff_user.id %}"
+                            class="btn btn-primary">Baholash</a>
+                    </td>
+                    <td>
                         {{staff_user.get_position_display }}
                     </td>
                     <td>
-                        {{staff_user.phone}}
+                        {{staff_user.phone|default:"-"}}
                     </td>
                     <td>
                         {{staff_user.total_rating}}
                     </td>
-                    <td>
-                        <a href="{% url 'rate_user_task_assign' task.id staff_user.id %}"
-                            class="btn btn-primary">Baholash</a>
-                    </td>
+
                 </tr>
                 {% empty %}
                 <tr>

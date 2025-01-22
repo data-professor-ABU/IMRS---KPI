@@ -27,7 +27,7 @@
             <div>
 
                 <!-- BAR Chart -->
-                <canvas id="kpiChart" width="400" height="360">
+                <canvas id="kpiChart" width="600" height="600">
 
                 </canvas>
 
@@ -96,6 +96,37 @@
         return color;
     };
 
+    // Add this before chart configuration
+    const totalLabelPlugin = {
+        id: 'totalLabel',
+        afterDatasetsDraw: (chart, args, options) => {
+            const { ctx } = chart;
+            ctx.save();
+
+            // For each data point (user)
+            chart.data.labels.forEach((label, index) => {
+                // Calculate total for this user
+                const total = chart.data.datasets.reduce((sum, dataset) => {
+                    return sum + (dataset.data[index] || 0);
+                }, 0);
+
+                // Get the y-position of the bar
+                const y = chart.scales.y.getPixelForValue(index);
+
+                // Position the total text after the bar
+                const x = chart.scales.x.getPixelForValue(total) + 10;
+
+                // Draw the total
+                ctx.font = 'bold 12px Arial';
+                ctx.fillStyle = '#000';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(`Total: ${total.toFixed(1)}`, x, y);
+            });
+
+            ctx.restore();
+        }
+    };
 
     // Create the chart
     const ctx = document.getElementById('kpiChart').getContext('2d');
@@ -103,17 +134,14 @@
 
 
     const _config = {
-        responsive: true,
+        // responsive: true,
         barThickness: 100,
         type: 'bar',
         data: chartData,
         options: {
-            options: {
-                animation: {
-                    onComplete: function () {
-                        console.log(myChart.toBase64Image());
-                    },
-                },
+            animation: {
+                animateScale: true,
+                animateRotate: true
             },
             indexAxis: 'y',
             elements: {
@@ -133,15 +161,26 @@
                         size: 20,
                         weight: 'bold'
                     }
+                },
+
+            },
+
+            tooltips: {
+                mode: 'label',
+                callbacks: {
+                    footer: function (data) {
+                        var total = 0;
+                        for (var i = 0; i < data.length; i++) {
+                            total += data[i].yLabel;
+                        }
+                        return 'Total: ' + total
+                    }
                 }
             },
             scales: {
                 y: {
                     stacked: true,
-                    ticks: {
-                        stepSize: 1
-                    },
-                    suggestedMin: 0,
+
                     title: {
                         display: true,
                         text: 'Xodimlar ismi',
@@ -150,7 +189,6 @@
                             weight: 'bold',
                         }
                     },
-                    // text of the y-axis also bold
                     ticks: {
                         font: {
                             weight: 'bold',
@@ -176,10 +214,11 @@
                     }
                 },
 
-
             }
         }
     };
+    // Register the plugin before creating the chart
+    Chart.register(totalLabelPlugin);
     // Create the chart
     var myPieChart = new Chart(ctx, _config);
 

@@ -28,7 +28,7 @@ def create_user_task_assign(request, task_id, staff_id):
 
         if request.method == "POST":
             subtask_id = request.POST.get("subtask_id")
-            rate = int(request.POST.get("rate"))
+            rate = float(request.POST.get("rate"))
             comment = request.POST.get("comment")
             date = request.POST.get("date")
 
@@ -99,5 +99,4 @@ def user_task_assigments(request, user_id, task_id=None):
             context,
         )
     except Exception as e:
-        messages.error(request, f"Error: {e}")
-        return redirect("swod_analysis")
+        raise e

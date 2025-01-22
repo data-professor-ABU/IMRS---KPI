@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import models
 from django.db.models import Prefetch, Q, Sum, Value
 from django.db.models.functions import Coalesce
 from django.shortcuts import redirect, render
@@ -37,6 +38,7 @@ def subtasks_list(request, task_id):
                         filter=Q(task_assignee__subtask__in=subtasks),
                     ),
                     Value(0),
+                    output_field=models.FloatField(),
                 )
             )
         )
@@ -47,5 +49,4 @@ def subtasks_list(request, task_id):
         }
         return render(request, "tasks/subtasks_list.html", context)
     except Exception as e:
-        messages.error(request, f"Xato: {e}")
-        return redirect("tasks_list")
+        raise e

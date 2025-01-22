@@ -14,7 +14,7 @@
     <div class="table-responsive text-nowrap">
         <!-- left side search and right side from to range date filter -->
 
-        <table class="table table-bordered">
+        <table id="example" class="table table-bordered">
             <thead>
                 <tr class="text-nowrap">
                     <th>#</th>
@@ -63,5 +63,6 @@
 </div>
 <!--/ Responsive Table -->
 
+{% include 'base/dataTable.html' %}
 
 {% endblock %}

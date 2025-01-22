@@ -1,10 +1,8 @@
-from datetime import datetime, timedelta
-
 from django.contrib.auth.decorators import login_required
+from django.db import models
 from django.db.models import Sum, Value
 from django.db.models.functions import Coalesce
 from django.shortcuts import render
-from django.utils import timezone
 
 from accounts.models import CustomUser, Project, UserPosition, UserRole
 from tasks.models import SubTasks, TaskAssignee, Tasks
@@ -56,7 +54,9 @@ def swod_analysis(request):
 
             # Calculate the sum of the ratings
             total_task_rating = user_subtask_ratings.aggregate(
-                total_rating=Coalesce(Sum("rating"), Value(0))
+                total_rating=Coalesce(
+                    Sum("rating"), Value(0), output_field=models.FloatField()
+                )
             )["total_rating"]
 
             # Add the task rating to the user ratings
@@ -97,13 +97,17 @@ def swod_analysis(request):
             pr_avr = project_above_avg.get(user.current_project.id)
             if pr_avr and user_totals[user.id] > pr_avr:
                 bonus = pr_avr * 0.1
-                users_bonus[user.id] = bonus
+                users_bonus[user.id] = round(bonus, 2)
                 user_totals[user.id] += bonus
+                # update round value
+                user_totals[user.id] = round(user_totals[user.id], 2)
 
             elif pr_avr:
                 bonus = pr_avr * 0.05
-                users_bonus[user.id] = bonus
+                users_bonus[user.id] = round(bonus, 2)
                 user_totals[user.id] += bonus
+                # update round value
+                user_totals[user.id] = round(user_totals[user.id], 2)
 
     # By user level find max user_totals and set it 100% then calculate other same level users percentage
     j_user = UserPosition.JUNIOR
@@ -149,8 +153,8 @@ def swod_analysis(request):
         "users_bonus": users_bonus,  # Passing user bonus by user ID
         "users_kpi": users_kpi,  # Passing user KPI by user ID
         "company_total_avg": round(company_total_avg, 2),
-        "users_total": sum(user_totals.values()),
-        "total_users_bonus": sum(users_bonus.values()),
+        "users_total": round(sum(user_totals.values()), 2),
+        "total_users_bonus": round(sum(users_bonus.values()), 2),
         "project_avg": project_avg,
         "project_above_avg": project_above_avg,
         "from_date": from_date,

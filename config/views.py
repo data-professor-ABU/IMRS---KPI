@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timedelta
 
 from django.contrib.auth.decorators import login_required
+from django.db import models
 from django.db.models import Sum, Value
 from django.db.models.functions import Coalesce
 from django.shortcuts import render
@@ -63,7 +64,9 @@ def dashboard(request):
                 )
             # Calculate the sum of the ratings
             total_task_rating = user_subtask_ratings.aggregate(
-                total_rating=Coalesce(Sum("rating"), Value(0))
+                total_rating=Coalesce(
+                    Sum("rating"), Value(0), output_field=models.FloatField()
+                )
             )["total_rating"]
 
             # Add the task rating to the user ratings

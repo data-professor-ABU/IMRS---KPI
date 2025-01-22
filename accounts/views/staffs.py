@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
+from django.db import models
 from django.db.models import Sum, Value
 from django.db.models.functions import Coalesce
 from django.shortcuts import render
@@ -55,7 +56,9 @@ def staff_line_data(request, user_id):
 
         # Calculate the sum of ratings for the user in the month
         total_rating = user_subtask_ratings.aggregate(
-            total_rating=Coalesce(Sum("rating"), Value(0))
+            total_rating=Coalesce(
+                Sum("rating"), Value(0), output_field=models.FloatField()
+            )
         )["total_rating"]
 
         # Append the monthly total to the KPI list

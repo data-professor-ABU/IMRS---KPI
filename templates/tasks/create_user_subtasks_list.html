@@ -19,7 +19,6 @@
                 <tr class="text-nowrap">
                     <th class="th-lg"># </th>
                     <th class="th-lg" class="text-center">
-
                         Vazifalar (ball)
                     </th>
                     <th class="text-center">Baholash</th>
@@ -32,30 +31,31 @@
                     <td class="th-lg">{{ forloop.counter }}</td>
 
                     <td>
-                        {{ subtask.title }} <small>({{subtask.min_range}} - {{subtask.max_range}})</small>
+                        <b>
+                            {{ subtask.title }} <small>({{subtask.min_range}} - {{subtask.max_range}})</small>
+                        </b>
                     </td>
                     <td class="text-center">
                         <form method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="subtask_id" value="{{ subtask.id }}">
                             <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <input type="number" class="form-control" name="rate" placeholder="Rate"
-                                        min="{{subtask.min_range}}" max="{{subtask.max_range}}"
-                                        value="{% if subtask.rated_data and subtask.rated_data.0.rating %}{{ subtask.rated_data.0.rating }}{% endif %}"
-                                        required>
+                                <div class="col-md-6 mb-3">
+                                    <input type="number" step=any class="form-control" name="rate" placeholder="Rate"
+                                        min="{{subtask.min_range}}" max="{{subtask.max_range}}" required>
                                 </div>
 
-                                <div class="col-md-4 mb-3">
-                                    <input type="text" class="form-control" name="comment" placeholder="Comment"
-                                        value="{% if subtask.rated_data and subtask.rated_data.0.comment %}{{ subtask.rated_data.0.comment }}{% endif %}"
-                                        required>
+
+                                <div class="col-md-6 mb-3">
+                                    <input type="date" class="form-control" name="date" placeholder="Sana" required>
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                    <input type="date" class="form-control" name="date" placeholder="Sana"
-                                        value="{% if subtask.rated_data and subtask.rated_data.0.date %}{{ subtask.rated_data.0.date|date:'Y-m-d' }}{% endif %}"
-                                        required>
+
+                                <div class="col-md-12 col-lg-12 mb-3">
+                                    <textarea class="form-control" name="comment" placeholder="Izoh" required>
+                                    </textarea>
+
                                 </div>
+
                                 <div class="col-md-12 mb-3">
                                     <button type="submit" class="btn btn-success">
                                         Saqlash

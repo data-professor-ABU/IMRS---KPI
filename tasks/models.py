@@ -59,7 +59,7 @@ class TaskAssignee(BaseModel):
     user = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name="task_assignee"
     )
-    rating = models.IntegerField(_("Rating"), blank=True, null=True)
+    rating = models.FloatField(_("Rating"), blank=True, null=True)
     comment = models.TextField(_("Comment"), blank=True, null=True)
     date = models.DateTimeField(_("Assigne Date"), null=True, blank=True)
 
