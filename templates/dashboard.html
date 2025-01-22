@@ -121,7 +121,7 @@
                 ctx.fillStyle = '#000';
                 ctx.textAlign = 'left';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(`Total: ${total.toFixed(1)}`, x, y);
+                ctx.fillText(`${total.toFixed(1)}`, x, y);
             });
 
             ctx.restore();
@@ -173,7 +173,7 @@
                         for (var i = 0; i < data.length; i++) {
                             total += data[i].yLabel;
                         }
-                        return 'Total: ' + total
+                        return total
                     }
                 }
             },
