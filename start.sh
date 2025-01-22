@@ -6,4 +6,3 @@ set -o nounset # Exit on using undeclared variables
 
 python manage.py migrate
 python manage.py runserver
-
