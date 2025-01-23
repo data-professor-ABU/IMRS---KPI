@@ -60,7 +60,7 @@ def swod_analysis(request):
             )["total_rating"]
 
             # Add the task rating to the user ratings
-            user_ratings[task.title] = total_task_rating
+            user_ratings[task.title] = round(total_task_rating,2)
             total_rating += total_task_rating  # Add task rating to the total
 
         # Add the user ratings and total rating to the ratings dictionary
