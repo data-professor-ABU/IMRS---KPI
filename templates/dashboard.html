@@ -1,37 +1,36 @@
 {% extends 'base/base.html' %}
 {load static %}
 {% block content %}
-<div class="container">
-    <div class="card" style="height: calc(100vh - 200px);">
-        <div class="card-header">
-            <h5 class="card-title mb-3">Dashboard</h5>
-            <div class="d-flex justify-content-between">
-                <form method="get" action="{% url 'dashboard' %}" class="d-flex gap-3">
-                    <!-- add select filter and from to date filter -->
-                    <select class="form-select" id="position_filter" name="position">
-                        <option value="all" selected>Hammasi</option>
-                        <option value="junior">Yetakchi mutaxassis</option>
-                        <option value="middle">Bosh mutaxassis</option>
-                        <option value="senior">Loyiha rahbari</option>
+<div class="card" style="height: calc(100vh - 200px);">
+    <div class="card-header">
+        <h5 class="card-title mb-3">Dashboard</h5>
+        <div class="d-flex justify-content-between">
+            <form method="get" action="{% url 'dashboard' %}" class="d-flex gap-3">
+                <!-- add select filter and from to date filter -->
+                <select class="form-select" id="position_filter" name="position">
+                    <option value="all" selected>Hammasi</option>
+                    <option value="junior">Yetakchi mutaxassis</option>
+                    <option value="middle">Bosh mutaxassis</option>
+                    <option value="senior">Loyiha rahbari</option>
 
-                    </select>
-                    <input type="date" class="form-control" id="from_date_input" name="from_date">
-                    <input type="date" class="form-control" id="to_date_input" name="to_date">
-                    <button type="submit" class="btn btn-primary" id="filter_btn">Filter</button>
-                </form>
+                </select>
+                <input type="date" class="form-control" id="from_date_input" name="from_date">
+                <input type="date" class="form-control" id="to_date_input" name="to_date">
+                <button type="submit" class="btn btn-primary" id="filter_btn">Filter</button>
+            </form>
 
-            </div>
         </div>
+    </div>
 
-        <div class="table-responsive text-nowrap">
-            <div>
+    <div class="table-responsive text-nowrap">
+        <div class="card-body">
 
-                <!-- BAR Chart -->
-                <canvas id="kpiChart" width="600" height="600">
+            <!-- BAR Chart -->
+            <canvas id="kpiChart" width="600" height="600">
 
-                </canvas>
+            </canvas>
 
-            </div>
+
         </div>
     </div>
 </div>
@@ -134,7 +133,7 @@
 
 
     const _config = {
-        // responsive: true,
+        responsive: true,
         barThickness: 100,
         type: 'bar',
         data: chartData,
@@ -162,6 +161,23 @@
                         weight: 'bold'
                     }
                 },
+                zoom: {
+                    zoom: {
+                        wheel: {
+                            enabled: false,
+                        },
+                        mode: 'x',
+                    },
+                    pan: {
+                        enabled: true,
+                        mode: 'x',
+                    },
+                    limits: {
+                        x: {
+                            minRange: 3
+                        },
+                    },
+                }
 
             },
 
@@ -197,6 +213,11 @@
                     }
                 },
                 x: {
+                    suggestedMax: function (context) {
+                        const data = context.chart.data.datasets.flatMap(dataset => dataset.data); // Get all x-axis values
+                        const max = Math.max(...data); // Find the max value
+                        return max + 5; // Set the suggested max to be greater
+                    },
                     stacked: true,
                     title: {
                         display: true,
@@ -210,7 +231,8 @@
                         font: {
                             weight: 'bold',
                             size: 14
-                        }
+                        },
+                        stepSize: 5
                     }
                 },
 

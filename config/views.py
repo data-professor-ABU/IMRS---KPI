@@ -13,12 +13,11 @@ from tasks.models import SubTasks, TaskAssignee, Tasks
 
 @login_required
 def dashboard(request):
-    from_date = request.GET.get("from_date", None)
-    to_date = request.GET.get("to_date", None)
+    today = datetime.now().strftime("%Y-%m-%d")
+    a_month_ago = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+    from_date = request.GET.get("from_date", a_month_ago)
+    to_date = request.GET.get("to_date", today)
     # check from_date and to_date if none set default value (a month ago and today)
-    if not from_date and not to_date:
-        from_date = datetime.now() - timedelta(days=30)
-        to_date = datetime.now()
     position = request.GET.get("position", "")
 
     # filter users by position
@@ -151,6 +150,10 @@ def dashboard(request):
             users_kpi[user.full_name] = (
                 round((user_totals[user.full_name] / s_max) * 100, 2) if s_max else 0
             )
+
+    # convert to_date and from_date to datetime
+    from_date = datetime.strptime(from_date, "%Y-%m-%d")
+    to_date = datetime.strptime(to_date, "%Y-%m-%d")
 
     context = {
         "users": users,

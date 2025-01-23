@@ -1,9 +1,6 @@
 {% extends 'base/base.html' %}
 
 {% block content %}
-<style>
-
-</style>
 
 <!-- Responsive Table -->
 <h4 class="fw-bold"><span class="text-muted fw-light"> <a href="{% url 'subtasks_list' task.id %}">Xodimlar</a> /</span>
@@ -16,18 +13,20 @@
     <div class="table-responsive text-nowrap">
         <table class="table table-bordered table-fit table-fixed">
             <thead>
-                <tr class="text-nowrap">
-                    <th class="th-lg"># </th>
-                    <th class="th-lg" class="text-center">
+                <tr class="text-wrap">
+                    <th class="th-lg">#</th>
+                    <th class="text-wrap">
                         Vazifalar (ball)
                     </th>
-                    <th class="text-center">Baholash</th>
+                    <th>Baho</th>
+                    <th>Sana</th>
+                    <th>Izoh</th>
                 </tr>
             </thead>
 
             <tbody>
                 {% for subtask in subtasks %}
-                <tr>
+                <tr class="text-wrap">
                     <td class="th-lg">{{ forloop.counter }}</td>
 
                     <td>
@@ -35,39 +34,34 @@
                             {{ subtask.title }} <small>({{subtask.min_range}} - {{subtask.max_range}})</small>
                         </b>
                     </td>
-                    <td class="text-center">
-                        <form method="POST">
-                            {% csrf_token %}
-                            <input type="hidden" name="subtask_id" value="{{ subtask.id }}">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <input type="number" step=any class="form-control" name="rate" placeholder="Rate"
-                                        min="{{subtask.min_range}}" max="{{subtask.max_range}}" required>
-                                </div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="subtask_id" value="{{ subtask.id }}">
 
+                        <td>
 
-                                <div class="col-md-6 mb-3">
-                                    <input type="date" class="form-control" name="date" placeholder="Sana" required>
-                                </div>
+                            <input type="number" step=any class="form-control" name="rate" placeholder="Ball"
+                                min="{{subtask.min_range}}" max="{{subtask.max_range}}" required>
 
-                                <div class="col-md-12 col-lg-12 mb-3">
-                                    <textarea class="form-control" name="comment" placeholder="Izoh" required>
+                        </td>
+                        <td>
+
+                            <input type="date" class="form-control" name="date" placeholder="Sana" required>
+                        </td>
+                        <td>
+
+                            <textarea class="form-control" name="comment" placeholder="Izoh" required>
                                     </textarea>
+                            <button type="submit" class="btn btn-success mt-2">
+                                Saqlash
+                            </button>
+                        </td>
+                    </form>
 
-                                </div>
-
-                                <div class="col-md-12 mb-3">
-                                    <button type="submit" class="btn btn-success">
-                                        Saqlash
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="3" class="text-center">No data</td>
+                    <td colspan="4" class="text-center">No data</td>
                 </tr>
                 {% endfor %}
             </tbody>

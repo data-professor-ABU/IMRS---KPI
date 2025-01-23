@@ -1,10 +1,7 @@
-from datetime import timedelta
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
 
 from accounts.models import CustomUser
 from tasks.models import SubTasks, TaskAssignee, Tasks
@@ -51,7 +48,7 @@ def create_user_task_assign(request, task_id, staff_id):
                 date=date,
             )
 
-            messages.success(request, "Rating saved successfully")
+            messages.success(request, "Baho mufaqiyatli saqlandi")
             return redirect("rate_user_task_assign", task_id=task_id, staff_id=staff_id)
 
         context = {
