@@ -26,7 +26,7 @@
         <div class="card-body">
 
             <!-- BAR Chart -->
-            <canvas id="kpiChart" width="600" height="600">
+            <canvas id="kpiChart" width="600" height="800">
 
             </canvas>
 
@@ -133,22 +133,18 @@
 
 
     const _config = {
-        responsive: true,
+        // responsive: true,
         barThickness: 100,
         type: 'bar',
         data: chartData,
         options: {
-            animation: {
-                animateScale: true,
-                animateRotate: true
-            },
+
             indexAxis: 'y',
             elements: {
                 bar: {
                     borderWidth: 2,
                 }
             },
-            responsive: true,
             plugins: {
                 legend: {
                     position: 'bottom',
@@ -161,23 +157,7 @@
                         weight: 'bold'
                     }
                 },
-                zoom: {
-                    zoom: {
-                        wheel: {
-                            enabled: false,
-                        },
-                        mode: 'x',
-                    },
-                    pan: {
-                        enabled: true,
-                        mode: 'x',
-                    },
-                    limits: {
-                        x: {
-                            minRange: 3
-                        },
-                    },
-                }
+
 
             },
 
@@ -216,7 +196,7 @@
                     suggestedMax: function (context) {
                         const data = context.chart.data.datasets.flatMap(dataset => dataset.data); // Get all x-axis values
                         const max = Math.max(...data); // Find the max value
-                        return max + 5; // Set the suggested max to be greater
+                        return max + 10; // Set the suggested max to be greater
                     },
                     stacked: true,
                     title: {
@@ -232,7 +212,7 @@
                             weight: 'bold',
                             size: 14
                         },
-                        stepSize: 5
+                        //stepSize: 5
                     }
                 },
 

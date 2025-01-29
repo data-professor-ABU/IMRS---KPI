@@ -1,19 +1,17 @@
 {% extends 'base/base.html' %}
 
 {% block content %}
-<div class="container">
-    <div class="card" style="height: calc(100vh - 200px);">
-        <div class="card-header">
-            <h5 class="card-title mb-3">
-                {{user.first_name}} {{user.last_name}} {{target_user_kpi}} -
-                <small>({{user.get_position_display}})</small>
-            </h5>
-        </div>
+<div class="card" style="height: calc(100vh -100px);">
+    <div class="card-header">
+        <h5 class="card-title mb-3">
+            {{user.first_name}} {{user.last_name}} {{target_user_kpi}} -
+            <small>({{user.get_position_display}})</small>
+        </h5>
+    </div>
 
-        <div class="table-responsive text-nowrap">
-            <div>
-                <canvas id="kpiChart" width="400" height="300"></canvas>
-            </div>
+    <div class="table-responsive">
+        <div>
+            <canvas id="kpiChart" width="400" height="300"></canvas>
         </div>
     </div>
 </div>
@@ -55,12 +53,11 @@
             },
             scales: {
                 y: {
-                    beginAtZero: true,
                     title: {
                         display: true,
                         text: 'KPI Score (%)',
                         font: { weight: 'bold' }
-                    }
+                    },
                 },
                 x: {
                     title: {
